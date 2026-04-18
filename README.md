@@ -70,8 +70,7 @@ pip install -r requirements.txt
 ## Run Daily After Market Close
 
 ```bash
-source .venv/bin/activate
-python run_daily.py
+./run_daily.sh
 ```
 
 What it does:
@@ -90,6 +89,9 @@ What it does:
 - `outputs/price_with_dip_labels.png`
 - `outputs/buy_signals.png`
 - `outputs/dip_probability_over_time.png`
+- `outputs/all_runs_report.csv` (all runs in one place)
+- `outputs/live_accuracy_report.csv` (daily performance snapshots)
+- `outputs/daily_dashboard.txt` (easy-to-read summary + recent runs + trend)
 
 ## Configuration
 
@@ -144,6 +146,14 @@ Outputs rule score and rule signal (`NO DIP`, `DIP WATCH`, `DIP ZONE`) alongside
 source .venv/bin/activate
 pytest -q
 ```
+
+## Daily Review (One Place)
+
+After each run, open:
+
+- `outputs/daily_dashboard.txt` for latest signal, quick/final accuracy, and trend.
+- `outputs/all_runs_report.csv` for full run history.
+- `outputs/live_accuracy_report.csv` for daily snapshot metrics and trend tracking over time.
 
 ## Example Terminal Output
 

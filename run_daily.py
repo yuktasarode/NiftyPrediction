@@ -15,6 +15,7 @@ from app.labeling import apply_rule_engine, create_dip_labels
 from app.model import load_model_bundle, save_model_bundle, train_and_evaluate
 from app.plotting import plot_buy_signals, plot_price_with_labels, plot_probability
 from app.predict import historical_probabilities, predict_latest, prediction_to_text
+from app.reporting import generate_daily_reports
 from app.utils import append_prediction_log, ensure_directories, save_json, save_text, update_live_accuracy_log
 
 
@@ -91,6 +92,16 @@ def main() -> None:
     if not final_resolved.empty:
         final_acc = float(final_resolved["FinalCorrect"].astype(float).mean())
         print(f"Final dip-label accuracy (resolved): {final_acc:.3f} over {len(final_resolved)} predictions")
+
+    metrics = generate_daily_reports(log_df, config.output_dir)
+    print(
+        "Dashboard updated: "
+        f"outputs/daily_dashboard.txt | outputs/all_runs_report.csv | outputs/live_accuracy_report.csv"
+    )
+    print(
+        f"Trend: quick={metrics.quick_trend} (last20={metrics.quick_last_20}), "
+        f"final={metrics.final_trend} (last20={metrics.final_last_20})"
+    )
 
     # 6) Plots
     prob_series = historical_probabilities(feat, bundle)

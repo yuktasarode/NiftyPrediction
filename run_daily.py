@@ -15,7 +15,7 @@ from app.labeling import apply_rule_engine, create_dip_labels
 from app.model import load_model_bundle, save_model_bundle, train_and_evaluate
 from app.plotting import plot_buy_signals, plot_price_with_labels, plot_probability
 from app.predict import historical_probabilities, predict_latest, prediction_to_text
-from app.reporting import generate_daily_reports
+from app.reporting import build_training_manifest, generate_daily_reports, save_training_manifest
 from app.utils import append_prediction_log, ensure_directories, save_json, save_text, update_live_accuracy_log
 
 
@@ -40,6 +40,12 @@ def main() -> None:
         try:
             bundle, fold_metrics, avg_metrics = train_and_evaluate(feat, config)
             save_model_bundle(bundle, config.model_path)
+            training_manifest = build_training_manifest(feat, bundle, avg_metrics, config.as_dict())
+            save_training_manifest(
+                training_manifest,
+                history_path=config.training_history_path,
+                latest_json_path=config.latest_training_manifest_path,
+            )
 
             print("\nValidation metrics by fold:")
             for fm in fold_metrics:
@@ -59,6 +65,10 @@ def main() -> None:
                 f"brier={avg_metrics['brier']:.3f}, train_f1={avg_metrics['train_f1']:.3f}, "
                 f"f1_gap={avg_metrics['f1_gap']:.3f}, purge_gap={avg_metrics['purge_gap_days']}, "
                 f"threshold={avg_metrics['decision_threshold']:.2f}"
+            )
+            print(
+                "Training manifest saved: "
+                "outputs/latest_training_manifest.json | outputs/model_training_history.csv"
             )
         except RuntimeError as exc:
             if config.model_path.exists():

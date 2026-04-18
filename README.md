@@ -92,6 +92,8 @@ What it does:
 - `outputs/all_runs_report.csv` (all runs in one place)
 - `outputs/live_accuracy_report.csv` (daily performance snapshots)
 - `outputs/daily_dashboard.txt` (easy-to-read summary + recent runs + trend)
+- `outputs/latest_training_manifest.json` (exact metadata for last retraining)
+- `outputs/model_training_history.csv` (append-only training history for model iterations)
 
 ## Configuration
 

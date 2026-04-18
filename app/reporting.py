@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -162,3 +163,80 @@ def generate_daily_reports(log_df: pd.DataFrame, output_dir: Path) -> LiveMetric
     dashboard_path = output_dir / "daily_dashboard.txt"
     dashboard_path.write_text(build_dashboard_text(df, metrics), encoding="utf-8")
     return metrics
+
+
+def _safe_float(val) -> float | None:
+    if val is None or (isinstance(val, float) and pd.isna(val)):
+        return None
+    try:
+        return float(val)
+    except Exception:
+        return None
+
+
+def build_training_manifest(
+    feat_df: pd.DataFrame,
+    model_bundle: dict,
+    avg_metrics: dict,
+    config_dict: dict,
+) -> dict:
+    """Create a rich, auditable training manifest."""
+    df = feat_df.copy()
+    labeled = df["label"].notna() if "label" in df.columns else pd.Series(False, index=df.index)
+    used = df[labeled]
+
+    date_min = df.index.min().date().isoformat() if len(df) else None
+    date_max = df.index.max().date().isoformat() if len(df) else None
+    train_min = used.index.min().date().isoformat() if len(used) else None
+    train_max = used.index.max().date().isoformat() if len(used) else None
+
+    label_non_null = int(labeled.sum()) if "label" in df.columns else 0
+    label_positive = int((df["label"] == 1).sum()) if "label" in df.columns else 0
+    label_positive_rate = (label_positive / label_non_null) if label_non_null else None
+
+    meta = model_bundle.get("metadata", {})
+    manifest = {
+        "TrainedAtUTC": pd.Timestamp.now(tz="UTC").isoformat(),
+        "ModelType": meta.get("model_type"),
+        "DecisionThreshold": _safe_float(meta.get("decision_threshold")),
+        "PurgeGapDays": meta.get("purge_gap_days"),
+        "FeatureCount": len(model_bundle.get("feature_columns", [])),
+        "TotalFeatureRows": int(len(df)),
+        "TrainRowsUsed": int(meta.get("train_rows", 0)),
+        "DataStartDate": date_min,
+        "DataEndDate": date_max,
+        "TrainWindowStartDate": train_min,
+        "TrainWindowEndDate": train_max,
+        "LabelRowsNonNull": label_non_null,
+        "LabelPositiveRows": label_positive,
+        "LabelPositiveRate": _safe_float(label_positive_rate),
+        "CVSplits": config_dict.get("cv_splits"),
+        "ReboundHorizonDays": config_dict.get("rebound_horizon_days"),
+        "AvgPrecision": _safe_float(avg_metrics.get("precision")),
+        "AvgRecall": _safe_float(avg_metrics.get("recall")),
+        "AvgF1": _safe_float(avg_metrics.get("f1")),
+        "AvgBalancedAccuracy": _safe_float(avg_metrics.get("balanced_accuracy")),
+        "AvgROCAUC": _safe_float(avg_metrics.get("roc_auc")),
+        "AvgPRAUC": _safe_float(avg_metrics.get("pr_auc")),
+        "AvgBrier": _safe_float(avg_metrics.get("brier")),
+        "AvgTrainF1": _safe_float(avg_metrics.get("train_f1")),
+        "AvgF1Gap": _safe_float(avg_metrics.get("f1_gap")),
+        "ConfigSnapshot": json.dumps(config_dict, default=str, sort_keys=True),
+    }
+    return manifest
+
+
+def save_training_manifest(manifest: dict, history_path: Path, latest_json_path: Path) -> None:
+    """Persist training manifest as append-only CSV history + latest JSON snapshot."""
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    latest_json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    row_df = pd.DataFrame([manifest])
+    if history_path.exists():
+        old = pd.read_csv(history_path)
+        history = pd.concat([old, row_df], ignore_index=True)
+    else:
+        history = row_df
+    history.to_csv(history_path, index=False)
+
+    latest_json_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

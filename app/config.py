@@ -89,6 +89,14 @@ class AppConfig:
     def summary_txt_path(self) -> Path:
         return self.output_dir / "latest_prediction.txt"
 
+    @property
+    def training_history_path(self) -> Path:
+        return self.output_dir / "model_training_history.csv"
+
+    @property
+    def latest_training_manifest_path(self) -> Path:
+        return self.output_dir / "latest_training_manifest.json"
+
     def as_dict(self) -> dict:
         """Return a JSON-serializable dict."""
         data = asdict(self)

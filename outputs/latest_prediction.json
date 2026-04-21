@@ -1,8 +1,8 @@
 {
-  "RunDate": "2026-04-20",
-  "TargetDate": "2026-04-21",
-  "NIFTY Close": 24364.849609375,
-  "Dip Probability": 0.11119256950355684,
+  "RunDate": "2026-04-21",
+  "TargetDate": "2026-04-22",
+  "NIFTY Close": 24576.599609375,
+  "Dip Probability": 0.049360370086714365,
   "Rule-Based Score": 0.0,
   "ML Signal": "NO DIP",
   "Rule Signal": "NO DIP",

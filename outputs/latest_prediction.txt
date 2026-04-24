@@ -1,7 +1,7 @@
-Run Date: 2026-04-21
-Target Date: 2026-04-22
-NIFTY Close: 24576.60
-Dip Probability: 0.049
+Run Date: 2026-04-22
+Target Date: 2026-04-23
+NIFTY Close: 24378.10
+Dip Probability: 0.059
 Rule-Based Score: 0.000
 ML Signal: NO DIP
 Rule Signal: NO DIP

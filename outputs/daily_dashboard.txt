@@ -1,13 +1,14 @@
 NIFTY Dip-Zone Daily Dashboard
 ================================
-Total Runs: 5
-Quick Accuracy: 75.00% (resolved=4, last20=75.00%, prev20=NA, trend=insufficient_data)
-Final Accuracy: 100.00% (resolved=3, last20=100.00%, prev20=NA, trend=insufficient_data)
+Total Runs: 6
+Quick Accuracy: 60.00% (resolved=5, last20=60.00%, prev20=NA, trend=insufficient_data)
+Final Accuracy: 100.00% (resolved=4, last20=100.00%, prev20=NA, trend=insufficient_data)
 
 Latest Runs:
    RunDate TargetDate Signal  Dip Probability  QuickActual  QuickCorrect  FinalActual  FinalCorrect
 2026-04-17 2026-04-17 NO DIP         0.048662          0.0           1.0          0.0           1.0
 2026-04-17 2026-04-20 NO DIP         0.124807          0.0           1.0          0.0           1.0
 2026-04-20 2026-04-21 NO DIP         0.111193          0.0           1.0          0.0           1.0
-2026-04-21 2026-04-22 NO DIP         0.049360          1.0           0.0          NaN           NaN
-2026-04-22 2026-04-23 NO DIP         0.059114          NaN           NaN          NaN           NaN
+2026-04-21 2026-04-22 NO DIP         0.049360          1.0           0.0          0.0           1.0
+2026-04-22 2026-04-23 NO DIP         0.059114          1.0           0.0          NaN           NaN
+2026-04-23 2026-04-24 NO DIP         0.134006          NaN           NaN          NaN           NaN
